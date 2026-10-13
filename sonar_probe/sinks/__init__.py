@@ -6,7 +6,7 @@ from sonar_probe.sinks.base import (
     register_sink,
     register_store,
 )
-from sonar_probe.sinks import kaldi_ark  # noqa: F401
+from sonar_probe.sinks import hf_dataset, kaldi_ark  # noqa: F401
 
 __all__ = [
     "EmbeddingSink", "EmbeddingStore",
