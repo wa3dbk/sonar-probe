@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sonar-probe"
+version = "0.1.0"
+description = "Extract and compare SONAR speech/text embeddings"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "pydantic>=2.5",
+    "typer>=0.12",
+    "rich>=13",
+    "soundfile>=0.12",
+    "torch>=2.1",
+    "torchaudio>=2.1",
+    "kaldiio>=2.18",
+    "datasets>=2.16",
+    "sonar-space>=0.2",
+    "fairseq2>=0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "ruff>=0.4",
+    "pyright>=1.1.360",
+]
+
+[project.scripts]
+sonar-probe = "sonar_probe.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["sonar_probe*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: tests that load real SONAR checkpoints (off by default)",
+]
+addopts = "-m 'not integration' --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "B", "UP"]
+
+[tool.pyright]
+include = ["sonar_probe", "tests"]
+pythonVersion = "3.10"
+typeCheckingMode = "basic"
