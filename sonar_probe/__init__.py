@@ -5,6 +5,7 @@ __version__ = "0.1.0"
 from sonar_probe.compare import CompareResult, compare, parse_operand
 from sonar_probe.config import CompareConfig, ExtractConfig
 from sonar_probe.driver import ExtractResult, extract, extract_text
+from sonar_probe.project import project_embeddings, project_store
 from sonar_probe.sinks import load_store
 from sonar_probe.text_input import read_text_tsv
 from sonar_probe.types import (
@@ -22,4 +23,5 @@ __all__ = [
     "ExtractConfig", "CompareConfig", "ExtractResult",
     "EMBEDDING_DIM",
     "compare", "CompareResult", "parse_operand",
+    "project_embeddings", "project_store",
 ]

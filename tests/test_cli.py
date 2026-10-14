@@ -146,6 +146,70 @@ def test_cli_compare_scalar(tmp_path: Path, fake_encoders):
     assert "cosine=" in r.output
 
 
+def test_cli_visualize(tmp_path: Path, fake_encoders):
+    pytest.importorskip("sklearn")
+    pytest.importorskip("plotly")
+    from sonar_probe.sinks import get_sink
+    from sonar_probe.types import EmbeddingRecord
+
+    out_store = tmp_path / "s"
+    sink = get_sink("kaldi_ark", output=out_store)
+    rng = np.random.default_rng(0)
+    with sink.open():
+        for i in range(20):
+            sink.write(
+                EmbeddingRecord(
+                    segment_id=f"seg{i}",
+                    file_id="r",
+                    channel=0,
+                    spkid=f"spk{i % 3}",
+                    start=float(i),
+                    end=float(i + 1),
+                    lang="eng" if i % 2 == 0 else "fra",
+                    modality="speech",
+                    embedding=rng.standard_normal(1024).astype(np.float32),
+                )
+            )
+    out_html = tmp_path / "viz.html"
+    r = CliRunner().invoke(
+        app,
+        [
+            "visualize",
+            str(out_store),
+            "--method", "tsne",
+            "--output", str(out_html),
+            "--color-by", "lang",
+            "--perplexity", "5",
+        ],
+    )
+    assert r.exit_code == 0, r.output
+    assert out_html.is_file()
+    content = out_html.read_text()
+    assert "eng" in content and "fra" in content
+    assert f"wrote {out_html}" in r.output
+
+
+def test_cli_visualize_bad_color_by(tmp_path: Path, fake_encoders):
+    from sonar_probe.sinks import get_sink
+    from sonar_probe.types import EmbeddingRecord
+
+    out_store = tmp_path / "s"
+    sink = get_sink("kaldi_ark", output=out_store)
+    with sink.open():
+        sink.write(
+            EmbeddingRecord(
+                segment_id="x", file_id="r", channel=0, spkid="s",
+                start=0.0, end=1.0, lang="eng", modality="speech",
+                embedding=np.ones(1024, dtype=np.float32),
+            )
+        )
+    r = CliRunner().invoke(
+        app, ["visualize", str(out_store), "--color-by", "bogus"]
+    )
+    assert r.exit_code == 2
+    assert "--color-by" in r.output
+
+
 def test_cli_inspect(tmp_path: Path, fake_encoders):
     from sonar_probe.sinks import get_sink
     from sonar_probe.types import EmbeddingRecord

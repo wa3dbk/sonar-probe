@@ -17,6 +17,7 @@ from sonar_probe import (
     load_store,
     read_text_tsv,
 )
+from sonar_probe.project import project_embeddings, write_scatter_html
 from sonar_probe.sinks import get_sink
 from sonar_probe.sources import get_source
 
@@ -148,6 +149,46 @@ def compare(
         typer.echo(f"ERROR: unknown --output-format {output_format!r}", err=True)
         raise typer.Exit(2)
     typer.echo(f"wrote {output}")
+
+
+@app.command()
+def visualize(
+    path: Path = typer.Argument(..., help="Store path"),
+    method: str = typer.Option("umap", "--method", help="umap | tsne"),
+    output: Path = typer.Option(Path("projection.html"), "--output", "-o"),
+    color_by: str = typer.Option(
+        "modality", "--color-by",
+        help="One of: modality, lang, spkid, none",
+    ),
+    n_neighbors: Optional[int] = typer.Option(None, "--n-neighbors"),
+    perplexity: Optional[float] = typer.Option(None, "--perplexity"),
+    random_state: int = typer.Option(42, "--random-state"),
+):
+    if color_by not in ("modality", "lang", "spkid", "none"):
+        typer.echo(
+            "ERROR: --color-by must be one of modality/lang/spkid/none",
+            err=True,
+        )
+        raise typer.Exit(2)
+    store = load_store(path)
+    ids, mat = store.matrix()
+    kwargs: dict = {}
+    if method == "umap" and n_neighbors is not None:
+        kwargs["n_neighbors"] = n_neighbors
+    if method == "tsne" and perplexity is not None:
+        kwargs["perplexity"] = perplexity
+    coords = project_embeddings(
+        mat, method=method, random_state=random_state, **kwargs  # type: ignore[arg-type]
+    )
+    labels: Optional[list[str]] = None
+    if color_by != "none":
+        meta = {rec.segment_id: getattr(rec, color_by) for rec in store}
+        labels = [str(meta.get(i) or "(none)") for i in ids]
+    write_scatter_html(
+        ids, coords, labels=labels,
+        title=f"{path.name} ({method})", output=output,
+    )
+    typer.echo(f"wrote {output} ({len(ids)} points)")
 
 
 @app.command()
