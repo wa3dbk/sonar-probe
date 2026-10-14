@@ -115,6 +115,14 @@ every feature end-to-end, and [`examples/`](examples/) for runnable recipes:
   ~40 languages, embed them through SONAR text, render a UMAP scatter.
 - [`examples/fleurs/`](examples/fleurs/) — sample FLEURS clips across ~25
   languages, embed them through SONAR speech, render a UMAP scatter.
+- [`examples/flores/`](examples/flores/) — fast, tiny FLORES-200 text
+  scatter across many scripts (no large audio downloads).
+- [`examples/opus/`](examples/opus/) — OPUS-100 parallel sentence pairs;
+  colored by pair shows SONAR aligning translations in the same space.
+- [`examples/mls/`](examples/mls/) — Multilingual LibriSpeech read speech
+  across 8 European languages (streaming supported).
+- [`examples/covost/`](examples/covost/) — cross-modal: speech + English
+  translation in the same scatter, showing SONAR's shared space.
 
 ## Input sources
 
