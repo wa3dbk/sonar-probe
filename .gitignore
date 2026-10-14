@@ -7,5 +7,21 @@ dist/
 build/
 *.egg-info/
 .venv/
+venv/
+env/
 .ruff_cache/
 .pyright/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Agent scratch (not source)
+.claude/
+.superpowers/
