@@ -109,9 +109,12 @@ print(float(res.scores[0, 0]))
 ```
 
 See the [`tutorials/`](tutorials/) directory for runnable notebooks covering
-every feature end-to-end, and [`examples/`](examples/) for runnable recipes
-(e.g. [`examples/cv/`](examples/cv/) — sample Common Voice sentences across
-~40 languages, embed them, and render a UMAP scatter).
+every feature end-to-end, and [`examples/`](examples/) for runnable recipes:
+
+- [`examples/cv/`](examples/cv/) — sample Common Voice sentences across
+  ~40 languages, embed them through SONAR text, render a UMAP scatter.
+- [`examples/fleurs/`](examples/fleurs/) — sample FLEURS clips across ~25
+  languages, embed them through SONAR speech, render a UMAP scatter.
 
 ## Input sources
 
