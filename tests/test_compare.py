@@ -6,7 +6,7 @@ import pytest
 
 from sonar_probe import CompareConfig, compare, load_store
 from sonar_probe.compare import OperandRef, parse_operand
-from sonar_probe.engine.speech import SpeechEncoder, SpeechEncoderPool
+from sonar_probe.engine.speech import SpeechEncoderPool
 from sonar_probe.engine.text import TextBackend, TextEncoder
 from sonar_probe.sinks import get_sink
 from sonar_probe.types import EmbeddingRecord
