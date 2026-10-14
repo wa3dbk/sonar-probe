@@ -136,7 +136,7 @@ def _resolve_text(
     text: str, lang: Lang, text_encoder: TextEncoder,
 ) -> OperandVectors:
     emb = text_encoder.encode([text], lang=lang)
-    return OperandVectors(ids=[f"text:{text[:16]}"], matrix=emb, modality="text")
+    return OperandVectors(ids=[f"text:0:{text[:16]}"], matrix=emb, modality="text")
 
 
 def _resolve_text_file(
@@ -145,7 +145,7 @@ def _resolve_text_file(
     lines = [ln.rstrip("\n") for ln in Path(path).read_text().splitlines()
              if ln.strip()]
     emb = text_encoder.encode(lines, lang=lang)
-    return OperandVectors(ids=[f"text:{t[:16]}" for t in lines],
+    return OperandVectors(ids=[f"text:{i}:{t[:16]}" for i, t in enumerate(lines)],
                           matrix=emb, modality="text")
 
 

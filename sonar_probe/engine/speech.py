@@ -59,11 +59,19 @@ class SpeechEncoderPool:
         device: str,
         cache_size: int = 4,
         encoder_factory: Callable[[Lang, str], SpeechEncoder] | None = None,
+        deterministic: bool = False,
     ):
         self._device = device
         self._cache_size = cache_size
         self._factory = encoder_factory or _default_factory
         self._cache: OrderedDict[Lang, SpeechEncoder] = OrderedDict()
+        if deterministic:
+            try:
+                import torch
+                torch.backends.cudnn.deterministic = True
+                torch.backends.cudnn.benchmark = False
+            except ImportError:
+                pass
 
     def _get(self, lang: Lang) -> SpeechEncoder:
         if lang in self._cache:

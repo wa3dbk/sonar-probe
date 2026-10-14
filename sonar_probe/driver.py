@@ -72,6 +72,7 @@ def extract(
     device = resolve_device(cfg.device)
     pool = pool or SpeechEncoderPool(
         device=device, cache_size=cfg.encoder_cache_size,
+        deterministic=cfg.deterministic,
     )
 
     written = skipped = 0
@@ -137,6 +138,16 @@ def extract(
     )
 
 
+def _log_text_failure(fh, item: TextItem, exc: Exception) -> None:
+    fh.write(json.dumps({
+        "item_id": item.text_id,
+        "modality": "text",
+        "lang": item.lang,
+        "error_type": type(exc).__name__,
+        "error": str(exc),
+    }) + "\n")
+
+
 def extract_text(
     items: Iterable[TextItem],
     sink: EmbeddingSink,
@@ -156,20 +167,35 @@ def extract_text(
             fail_fh = fail_path.open("w", encoding="utf-8")
         try:
             buf: list[TextItem] = []
+
             def flush():
-                nonlocal written
-                if not buf: return
-                texts = [t.text for t in buf]
+                nonlocal written, skipped
+                if not buf:
+                    return
                 # Group by lang to call encoder once per lang.
                 groups: dict[str, list[int]] = {}
                 for i, t in enumerate(buf):
                     groups.setdefault(t.lang, []).append(i)
-                out = [None] * len(buf)
+                out: list = [None] * len(buf)
                 for lg, idxs in groups.items():
-                    embs = enc.encode([texts[i] for i in idxs], lang=lg)
+                    group_items = [buf[i] for i in idxs]
+                    try:
+                        embs = enc.encode([buf[i].text for i in idxs], lang=lg)
+                    except MissingLangError:
+                        raise
+                    except Exception as e:
+                        if cfg.strict:
+                            raise
+                        for item in group_items:
+                            if fail_fh:
+                                _log_text_failure(fail_fh, item, e)
+                            skipped += 1
+                        continue
                     for row, i in zip(embs, idxs):
                         out[i] = row
                 for item, emb in zip(buf, out):
+                    if emb is None:
+                        continue
                     sink.write(EmbeddingRecord(
                         segment_id=item.text_id, file_id=item.text_id,
                         channel=0, spkid="", start=0.0, end=0.0,
@@ -187,4 +213,4 @@ def extract_text(
             if fail_fh is not None:
                 fail_fh.close()
     return ExtractResult(written=written, skipped=skipped,
-                        failures_path=fail_path if fail_fh is not None else None)
+                         failures_path=fail_path if fail_fh is not None else None)
