@@ -12,7 +12,7 @@ from sonar_probe.audio import load_waveform
 from sonar_probe.config import ExtractConfig, resolve_device
 from sonar_probe.engine.speech import SpeechEncoderPool
 from sonar_probe.engine.text import TextEncoder
-from sonar_probe.errors import BadSegmentError, MissingLangError, SonarProbeError
+from sonar_probe.errors import BadSegmentError, MissingLangError
 from sonar_probe.sinks.base import EmbeddingSink
 from sonar_probe.sources.base import SegmentSource
 from sonar_probe.types import EmbeddingRecord, Lang, Segment, TextItem
