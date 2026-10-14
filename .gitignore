@@ -25,3 +25,4 @@ env/
 # Agent scratch (not source)
 .claude/
 .superpowers/
+docs/
