@@ -2,6 +2,7 @@
 
 __version__ = "0.1.0"
 
+from sonar_probe.compare import CompareResult, compare, parse_operand
 from sonar_probe.config import CompareConfig, ExtractConfig
 from sonar_probe.driver import ExtractResult, extract, extract_text
 from sonar_probe.sinks import load_store
@@ -20,4 +21,5 @@ __all__ = [
     "Segment", "EmbeddingRecord", "AudioRef", "TextItem",
     "ExtractConfig", "CompareConfig", "ExtractResult",
     "EMBEDDING_DIM",
+    "compare", "CompareResult", "parse_operand",
 ]
