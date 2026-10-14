@@ -20,8 +20,12 @@ segment manifests — from the command line or as a library.
 
 ## Install
 
+Not yet on PyPI — install from a local clone:
+
 ```bash
-pip install -e .[dev]
+git clone https://github.com/wa3dbk/sonar-probe.git
+cd sonar-probe
+pip install -e .[dev]            # add ,viz for UMAP / t-SNE / plotly
 ```
 
 Runtime dependencies include `torch`, `torchaudio`, `kaldiio`, `datasets`,
@@ -30,6 +34,8 @@ Runtime dependencies include `torch`, `torchaudio`, `kaldiio`, `datasets`,
 
 First speech or text extraction downloads the SONAR checkpoint via
 HuggingFace Hub. Set `HF_HOME` to a persistent directory to cache across runs.
+
+> **TODO** — publish to PyPI so this reduces to `pip install sonar-probe`.
 
 ## Quick start — CLI
 
